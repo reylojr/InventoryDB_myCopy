@@ -22,24 +22,30 @@ public class App {
 			//			System.out.println();
 
 			System.out.println("Updating entry with ID: 2FT57YS7CM97");
-			driver.updateEntry("2FT57YS7CM97", 111, 111.0, 111.0, "YTCMSBPA");
-			System.out.println();
+			boolean r = driver.updateEntry("2FT57YS7CM97", 111, 111.0, 111.0, "YTCMSBPA");
+			if (r) {
+				System.out.println("Successful\n");
+			} else System.out.println("Failed\n");
 
 			System.out.println("Searching for the ID: 2FT57YS7CM97");
 			System.out.println(driver.searchById("2FT57YS7CM97"));
 			System.out.println();
 
 			System.out.println("Deleting the ID: 2FT57YS7CM97");
-			driver.deleteEntry("2FT57YS7CM97");
-			System.out.println();
+			r = driver.deleteEntry("2FT57YS7CM97");
+			if (r) {
+				System.out.println("Successful\n");
+			} else System.out.println("Failed\n");
 
 			System.out.println("Searching for the ID: 2FT57YS7CM97");
 			System.out.println(driver.searchById("2FT57YS7CM97"));
 			System.out.println();
 
 			System.out.println("Creating an entry for the ID: 2FT57YS7CM97");
-			driver.createEntry("2FT57YS7CM97", 112, 112.0, 112.0, "YTCMSBPA");
-			System.out.println();
+			r = driver.createEntry("2FT57YS7CM97", 112, 112.0, 112.0, "YTCMSBPA");
+			if (r) {
+				System.out.println("Successful\n");
+			} else System.out.println("Failed\n");
 
 			System.out.println("Searching for the ID: 2FT57YS7CM97");
 			System.out.println(driver.searchById("2FT57YS7CM97"));

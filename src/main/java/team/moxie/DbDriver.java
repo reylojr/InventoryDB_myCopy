@@ -81,9 +81,7 @@ public class DbDriver {
 				)
 			);
 
-			System.out.println(result);
-
-			return true;
+			return result == 1;
 		} catch (Exception ex) {
 			// Print out the reason and return null
 			System.out.println(ex.toString());
@@ -104,9 +102,8 @@ public class DbDriver {
 
 			//delete from inv.inventory where product_id='2FT57YS7CM97';
 			int result = statement.executeUpdate(String.format("DELETE FROM inv.inventory WHERE product_id='%s'", id));
-			System.out.println(result);
 
-			return true;
+			return result == 1;
 		} catch (Exception ex) {
 			// Print out the reason and return null
 			System.out.println(ex.toString());
@@ -121,7 +118,7 @@ public class DbDriver {
 	 * @return A dbEntry array if successful or null in not
 	 * @see dbEntry
 	 */
-	public dbEntry searchById(String id) throws SQLException {
+	public dbEntry searchById(String id) {
 		try {
 			//create and execute the statement
 			Statement statement = dbConn.createStatement();
@@ -208,9 +205,8 @@ public class DbDriver {
 					id
 				)
 			);
-			System.out.println(result);
 
-			return true;
+			return result == 1;
 		} catch (Exception ex) {
 			// Print out the reason and return null
 			System.out.println(ex.toString());
