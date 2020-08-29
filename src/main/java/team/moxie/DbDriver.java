@@ -65,7 +65,30 @@ public class DbDriver {
 	 * @return Boolean for whether the operation was successful
 	 */
 	public boolean createEntry(String id, int quantity, double wholesalePrice, double salePrice, String supplierId) {
-		return true;
+		try {
+			//create and execute the statement
+			Statement statement = dbConn.createStatement();
+
+			//insert into inv.inventory(product_id, quantity, wholesale_cost, sale_price, supplier_id) values ('2FT57YS7CM97',112,112.0,112.0, 'YTCMSBPA')
+			int result = statement.executeUpdate(
+				String.format(
+					"insert into inv.inventory(product_id, quantity, wholesale_cost, sale_price, supplier_id) values ('%s',%d,%s,%s,'%s')",
+					id,
+					quantity,
+					wholesalePrice,
+					salePrice,
+					supplierId
+				)
+			);
+
+			System.out.println(result);
+
+			return true;
+		} catch (Exception ex) {
+			// Print out the reason and return null
+			System.out.println(ex.toString());
+			return false;
+		}
 	}
 
 	/**
@@ -75,7 +98,20 @@ public class DbDriver {
 	 * @return Boolean for whether the operation was successful
 	 */
 	public boolean deleteEntry(String id) {
-		return true;
+		try {
+			//create and execute the statement
+			Statement statement = dbConn.createStatement();
+
+			//delete from inv.inventory where product_id='2FT57YS7CM97';
+			int result = statement.executeUpdate(String.format("DELETE FROM inv.inventory WHERE product_id='%s'", id));
+			System.out.println(result);
+
+			return true;
+		} catch (Exception ex) {
+			// Print out the reason and return null
+			System.out.println(ex.toString());
+			return false;
+		}
 	}
 
 	/**
@@ -89,7 +125,9 @@ public class DbDriver {
 		try {
 			//create and execute the statement
 			Statement statement = dbConn.createStatement();
-			ResultSet resultSet = statement.executeQuery("select * from `inv`.`inventory` where product_id = '" + id + "'");
+			ResultSet resultSet = statement.executeQuery(
+				String.format("select * from `inv`.`inventory` where product_id = '%s'", id)
+			);
 
 			// In this case there should only ever be one as the IDs are set to be unique
 			// TODO: 8/28/2020 Make this more robust and catch when there is more than one item
@@ -123,7 +161,9 @@ public class DbDriver {
 		try {
 			//create and execute the statement
 			Statement statement = dbConn.createStatement();
-			ResultSet resultSet = statement.executeQuery("select * from `inv`.`inventory` where supplier_id = '" + id + "'");
+			ResultSet resultSet = statement.executeQuery(
+				String.format("select * from `inv`.`inventory` where supplier_id = '%s'", id)
+			);
 
 			// In this case there should only ever be one as the IDs are set to be unique
 			// TODO: 8/28/2020 Make this more robust and catch when there is more than one item
@@ -156,6 +196,25 @@ public class DbDriver {
 	 * @return boolean whether the operation completed successfully
 	 */
 	public boolean updateEntry(String id, int quantity, double wholesalePrice, double salePrice, String supplierId) {
-		return true;
+		try {
+			//create and execute the statement
+			Statement statement = dbConn.createStatement();
+			int result = statement.executeUpdate(
+				String.format(
+					"update inv.inventory set quantity = %d, wholesale_cost = %s, sale_price = %s where product_id = '%s'",
+					quantity,
+					wholesalePrice,
+					salePrice,
+					id
+				)
+			);
+			System.out.println(result);
+
+			return true;
+		} catch (Exception ex) {
+			// Print out the reason and return null
+			System.out.println(ex.toString());
+			return false;
+		}
 	}
 }
