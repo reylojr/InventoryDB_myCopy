@@ -1,2 +1,2 @@
-# InventoryManager
-For CS3250
+# InvMng
+Using Maven and Junit
