@@ -1,6 +1,8 @@
 package team.moxie;
 
 import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A driver for handling all the SCUD operations for the inventory database
@@ -83,8 +85,28 @@ public class DbDriver {
 	 * @return A dbEntry array if successful or null in not
 	 * @see dbEntry
 	 */
-	public dbEntry searchById(String id) {
-		return null;
+	public dbEntry searchById(String id) throws SQLException {
+		try {
+			//create and execute the statement
+			Statement statement = dbConn.createStatement();
+			ResultSet resultSet = statement.executeQuery("select * from `inv`.`inventory` where product_id = '" + id + "'");
+
+			// In this case there should only ever be one as the IDs are set to be unique
+			// TODO: 8/28/2020 Make this more robust and catch when there is more than one item
+			resultSet.next();
+
+			int quantity = resultSet.getInt("quantity");
+			double whole = resultSet.getDouble("wholesale_cost");
+			double sale = resultSet.getInt("sale_price");
+			String supplier = resultSet.getString("supplier_id");
+
+			// Create and return the entry object
+			return new dbEntry(id, quantity, whole, sale, supplier);
+		} catch (Exception ex) {
+			// Print out the reason and return null
+			System.out.println(ex.toString());
+			return null;
+		}
 	}
 
 	/**
@@ -95,7 +117,32 @@ public class DbDriver {
 	 * @see dbEntry
 	 */
 	public dbEntry[] searchBySupplier(String id) {
-		return null;
+		// Create a list to add the entry objects to
+		LinkedList<dbEntry> entryList = new LinkedList<>();
+
+		try {
+			//create and execute the statement
+			Statement statement = dbConn.createStatement();
+			ResultSet resultSet = statement.executeQuery("select * from `inv`.`inventory` where supplier_id = '" + id + "'");
+
+			// In this case there should only ever be one as the IDs are set to be unique
+			// TODO: 8/28/2020 Make this more robust and catch when there is more than one item
+			while (resultSet.next()) {
+				id = resultSet.getString("product_id");
+				int quantity = resultSet.getInt("quantity");
+				double whole = resultSet.getDouble("wholesale_cost");
+				double sale = resultSet.getInt("sale_price");
+				String supplier = resultSet.getString("supplier_id");
+
+				// Create and return the entry object
+				entryList.add(new dbEntry(id, quantity, whole, sale, supplier));
+			}
+			return entryList.toArray(new dbEntry[entryList.size()]);
+		} catch (Exception ex) {
+			// Print out the reason and return null
+			System.out.println(ex.toString());
+			return null;
+		}
 	}
 
 	/**
