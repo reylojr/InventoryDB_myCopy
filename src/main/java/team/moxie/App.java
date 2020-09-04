@@ -58,25 +58,34 @@ public class App {
 
 			//Added by Shawn, Cody - option 1
 			Scanner sysIn = new Scanner(System.in);
-			System.out.println("Database Manager.\nPress 1 for operations management.\nPress 2 for customer service");
+			System.out.println("Database Manager.\nPress 1 for Supplier.\nPress 2 for Buyer");
 			int test = sysIn.nextInt();
 			switch (test) {
 				case 1:
-					//operations();
+					//Supplier();
 				case 2:
-					//customer();
-					Scanner cusIn = new Scanner(System.in);
-					int cusSel = sysIn.nextInt();
-					System.out.println("Welcome to database customer service. Please make selection:\n");
-					System.out.println("1: Search inventory\n2: Make purchase");
-					switch (cusSel) {
-						case (1):
-							System.out.println("Enter product ID");
-							String ID = sysIn.nextLine();
-							System.out.println(driver.searchById(ID));
-					}
+					//Buyer();
+					Scanner prodIn = new Scanner(System.in);
+					System.out.println("Welcome to database Buyer Event.\n");
+					System.out.println("Enter Product ID");
+					String ID = prodIn.nextLine();
+					dbEntry product = driver.searchById(ID);
+					System.out.println("You've chosen: " + product);
+					boolean a;
+					do {
+						a = true;
+						System.out.println("Enter quantity to buy:");
+						int quantity = prodIn.nextInt();
+						if (quantity > product.getQuantity() || quantity < 0) {
+							a = false;
+							System.out.println("Reenter quantity!!!!");
+						}
+						else{
+							product.setQuantity(product.getQuantity() - quantity);
+						}
+					} while ( !a );
+					System.out.println("Product update: " + product);
 			}
-
 
 		} catch (SQLException throwables) {
 			throwables.printStackTrace();

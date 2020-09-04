@@ -7,7 +7,7 @@ package team.moxie;
  */
 public class dbEntry {
 	private final String id;
-	private final int quantity;
+	private  int quantity;
 	private final double wholesalePrice;
 	private final double salePrice;
 	private final String supplierId;
@@ -52,6 +52,9 @@ public class dbEntry {
 	 *
 	 * @return The wholesale price of the entry
 	 */
+	public void setQuantity(int quantity){
+		this.quantity = quantity;
+	}
 	public double getWholesalePrice() {
 		return wholesalePrice;
 	}
@@ -82,20 +85,20 @@ public class dbEntry {
 	@Override
 	public String toString() {
 		return (
-			"dbEntry{" +
-			"id='" +
+			"Data Base Entry\n" +
+			"Id='" +
 			id +
 			'\'' +
-			", quantity=" +
+			"\nQuantity=" +
 			quantity +
-			", wholesalePrice=" +
+			"\nWholesalePrice=" +
 			wholesalePrice +
-			", salePrice=" +
+			"\nSalePrice=" +
 			salePrice +
-			", supplierId='" +
+			"\nSupplierId='" +
 			supplierId +
-			'\'' +
-			'}'
+			'\''
+
 		);
 	}
 }
