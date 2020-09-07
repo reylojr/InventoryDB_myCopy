@@ -7,7 +7,7 @@ public class App {
 
 	public static void main(String[] args) {
 		try {
-			DbDriver driver = new DbDriver("192.168.1.10", "3306", "inv", "dustin", "Hellgirlfan97@");
+			DbDriver driver = new DbDriver("50.116.26.153", "3306", "inv", "team", "GJ&8YahAh%kS#i");
 			System.out.println("Connection successful.");
 			System.out.println("Running tests!");
 
