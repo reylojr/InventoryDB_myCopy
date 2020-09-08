@@ -27,7 +27,6 @@ public class DbDriver {
 	 * @throws SQLException Thrown if the database connection fails
 	 */
 
-
 	public DbDriver(String hostIP, String hostPort, String databaseName, String dbUser, String dbPass)
 		throws SQLException {
 		// Create the database connection
@@ -177,7 +176,7 @@ public class DbDriver {
 				entryList.add(new dbEntry(id, quantity, whole, sale, supplier));
 			}
 			return entryList;
-//			return entryList.toArray(new dbEntry[entryList.size()]);
+			//			return entryList.toArray(new dbEntry[entryList.size()]);
 		} catch (Exception ex) {
 			// Print out the reason and return null
 			System.out.println(ex.toString());

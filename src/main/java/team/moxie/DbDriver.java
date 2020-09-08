@@ -26,6 +26,7 @@ public class DbDriver {
 	 * @param dbPass        The password for the user
 	 * @throws SQLException Thrown if the database connection fails
 	 */
+
 	public DbDriver(String hostIP, String hostPort, String databaseName, String dbUser, String dbPass)
 		throws SQLException {
 		// Create the database connection
@@ -151,7 +152,7 @@ public class DbDriver {
 	 * @return A dbEntry array if successful or null in not
 	 * @see dbEntry
 	 */
-	public dbEntry[] searchBySupplier(String id) {
+	public LinkedList<dbEntry> searchBySupplier(String id) {
 		// Create a list to add the entry objects to
 		LinkedList<dbEntry> entryList = new LinkedList<>();
 
@@ -174,7 +175,8 @@ public class DbDriver {
 				// Create and return the entry object
 				entryList.add(new dbEntry(id, quantity, whole, sale, supplier));
 			}
-			return entryList.toArray(new dbEntry[entryList.size()]);
+			return entryList;
+			//			return entryList.toArray(new dbEntry[entryList.size()]);
 		} catch (Exception ex) {
 			// Print out the reason and return null
 			System.out.println(ex.toString());
