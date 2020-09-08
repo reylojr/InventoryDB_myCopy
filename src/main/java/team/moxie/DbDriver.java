@@ -215,4 +215,42 @@ public class DbDriver {
 			return false;
 		}
 	}
+
+	/**
+	 * Returns the entire database
+	 * PLEASE REFRAIN FROM USING UNLESS YOU HAVE TO
+	 * There are a lot of items and this is very slow, only use when you absolutely need to
+	 * @return LinkedList of dbEntries
+	 * @see dbEntry
+	 */
+	public LinkedList<dbEntry> returnAllEntries() {
+		// Create a list to add the entry objects to
+		LinkedList<dbEntry> entryList = new LinkedList<>();
+
+		try {
+			//create and execute the statement
+			Statement statement = dbConn.createStatement();
+			ResultSet resultSet = statement.executeQuery("select * from `inv`.`inventory`");
+
+			// In this case there should only ever be one as the IDs are set to be unique
+			// TODO: 8/28/2020 Make this more robust and catch when there is more than one item
+			while (resultSet.next()) {
+				String id = resultSet.getString("product_id");
+				int quantity = resultSet.getInt("quantity");
+				double whole = resultSet.getDouble("wholesale_cost");
+				double sale = resultSet.getInt("sale_price");
+				String supplier = resultSet.getString("supplier_id");
+
+				// Create and return the entry object
+				entryList.add(new dbEntry(id, quantity, whole, sale, supplier));
+			}
+			return entryList;
+			//			return entryList.toArray(new dbEntry[entryList.size()]);
+		} catch (Exception ex) {
+			// Print out the reason and return null
+			System.out.println(ex.toString());
+			return null;
+		}
+	}
+
 }

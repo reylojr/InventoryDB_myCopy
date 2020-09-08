@@ -1,14 +1,14 @@
 package team.moxie;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.LinkedList;
-import java.util.Objects;
-import javax.swing.*;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.*;
+
+
 
 public class InventoryGUI {
 	private DbDriver driver;
@@ -44,6 +44,9 @@ public class InventoryGUI {
 		table.setFillsViewportHeight(true);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
+		//////////////////////////////////////////////////////////////////////
+		// Stuff for setting the size of the table do not touch             //
+		//////////////////////////////////////////////////////////////////////
 		table.getColumnModel().getColumn(0).setPreferredWidth(120);
 		table.getColumnModel().getColumn(1).setPreferredWidth(120);
 		table.getColumnModel().getColumn(2).setPreferredWidth(120);
@@ -61,6 +64,7 @@ public class InventoryGUI {
 		table.getColumnModel().getColumn(2).setMaxWidth(300);
 		table.getColumnModel().getColumn(3).setMaxWidth(300);
 		table.getColumnModel().getColumn(4).setMaxWidth(300);
+		//////////////////////////////////////////////////////////////////////
 
 		JFormattedTextField NOTCONNECTEDFormattedTextField = new JFormattedTextField();
 		NOTCONNECTEDFormattedTextField.setBackground(new Color(-65535));
@@ -69,6 +73,9 @@ public class InventoryGUI {
 		NOTCONNECTEDFormattedTextField.setHorizontalAlignment(0);
 		NOTCONNECTEDFormattedTextField.setText("NOT CONNECTED");
 
+		//////////////////////////////////////////////////////////////////////
+		// These are where all the buttons are created                      //
+		//////////////////////////////////////////////////////////////////////
 		JButton createButton = new JButton();
 		createButton.setText("Create Entry");
 
@@ -83,6 +90,7 @@ public class InventoryGUI {
 
 		JButton deleteButton = new JButton();
 		deleteButton.setText("Delete Entry");
+		//////////////////////////////////////////////////////////////////////
 
 		JPanel east = new JPanel();
 		GridLayout gridLayout = new GridLayout(5, 1);
@@ -94,6 +102,76 @@ public class InventoryGUI {
 		east.add(updateButton);
 		east.add(createButton);
 		east.add(deleteButton);
+
+		JMenuBar menuBar = new JMenuBar();
+		JMenu fileMenu = new JMenu("File");
+		JMenu calcMenu = new JMenu();
+
+		// calc menu stuff
+
+		//// file menu stuff
+
+		// exit
+		JMenuItem exitItem = new JMenuItem("Exit");
+		exitItem.addActionListener((event) -> System.exit(0));
+
+		// reload
+
+		JMenuItem refreshItem = new JMenuItem("Refresh DB");
+		refreshItem.addActionListener((event) -> {
+			NOTCONNECTEDFormattedTextField.setBackground(new Color(-65535));
+			driver = null;
+			try {
+				driver = new DbDriver("50.116.26.153", "3306", "inv", "team", "GJ&8YahAh%kS#i");
+			} catch (SQLException throwables) {
+				throwables.printStackTrace();
+			}
+			NOTCONNECTEDFormattedTextField.setBackground(new Color(0x65FF5A));
+		});
+
+		JMenuItem loadAll = new JMenuItem("Load All");
+		loadAll.addActionListener((event) -> {
+
+			JPanel getInfoPanel = new JPanel();
+			getInfoPanel.add(new JLabel("This operation may be slow."));
+
+			int result1 = JOptionPane.showConfirmDialog(
+					null,
+					getInfoPanel,
+					"WARNING",
+					JOptionPane.OK_CANCEL_OPTION
+			);
+			if (result1 != JOptionPane.OK_OPTION) {
+				return;
+			}
+
+			LinkedList<dbEntry> list = driver.returnAllEntries();
+
+			// Clear the rows
+			int rowCount = tableModel.getRowCount();
+			for (int i = rowCount - 1; i >= 0; i--) {
+				tableModel.removeRow(i);
+			}
+
+			// Add the rows back
+			for (dbEntry entry : list) {
+				tableModel.addRow(
+						new Object[] {
+								entry.getId(),
+								entry.getQuantity(),
+								entry.getWholesalePrice(),
+								entry.getSalePrice(),
+								entry.getSupplierId()
+						});
+			}
+
+		});
+
+		fileMenu.add(loadAll);
+		fileMenu.add(refreshItem);
+		fileMenu.add(exitItem);
+
+		menuBar.add(fileMenu);
 
 		JPanel north = new JPanel(new FlowLayout());
 		north.add(NOTCONNECTEDFormattedTextField);
@@ -111,6 +189,7 @@ public class InventoryGUI {
 		frame.setPreferredSize(new Dimension(1000, 450));
 		frame.setLocationRelativeTo(null);
 		frame.add(panel1);
+		frame.setJMenuBar(menuBar);
 		frame.pack();
 		frame.setVisible(true);
 

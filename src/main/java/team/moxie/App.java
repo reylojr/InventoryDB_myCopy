@@ -1,15 +1,11 @@
 package team.moxie;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatDarkLaf;
-import java.awt.*;
-import java.sql.*;
+
+import javax.swing.*;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.Scanner;
-import javax.print.attribute.standard.PresentationDirection;
-import javax.swing.*;
 
 public class App {
 
