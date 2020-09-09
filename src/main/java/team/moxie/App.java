@@ -56,6 +56,38 @@ public class App {
 			System.out.println();
 
 			System.out.println("Tests have completed.");
+
+			//Added by Shawn, Cody - option 1
+			Scanner sysIn = new Scanner(System.in);
+			System.out.println("Database Manager.\nPress 1 for Supplier.\nPress 2 for Buyer");
+			int test = sysIn.nextInt();
+			switch (test) {
+				case 1:
+					//Supplier();
+				case 2:
+					//Buyer();
+					Scanner prodIn = new Scanner(System.in);
+					System.out.println("Welcome to database Buyer Event.\n");
+					System.out.println("Enter Product ID");
+					String ID = prodIn.nextLine();
+					dbEntry product = driver.searchById(ID);
+					System.out.println("You've chosen: " + product);
+					boolean a;
+					do {
+						a = true;
+						System.out.println("Enter quantity to buy:");
+						int quantity = prodIn.nextInt();
+						if (quantity > product.getQuantity() || quantity < 0) {
+							a = false;
+							System.out.println("Reenter quantity!!!!");
+						}
+						else{
+							product.setQuantity(product.getQuantity() - quantity);
+						}
+					} while ( !a );
+					System.out.println("Product update: " + product);
+			}
+
 		} catch (SQLException throwables) {
 			throwables.printStackTrace();
 		}
