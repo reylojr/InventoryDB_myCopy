@@ -66,6 +66,11 @@ public class DbDriver {
 	 * @return Boolean for whether the operation was successful
 	 */
 	public boolean createEntry(String id, int quantity, double wholesalePrice, double salePrice, String supplierId) {
+		// cannot be longer than 12 char
+		if (id.length() > 12 || supplierId.length() > 12) return false;
+
+		if (quantity < 0 || wholesalePrice < 0 || salePrice < 0) return false;
+
 		try {
 			//create and execute the statement
 			Statement statement = dbConn.createStatement();
@@ -97,6 +102,9 @@ public class DbDriver {
 	 * @return Boolean for whether the operation was successful
 	 */
 	public boolean deleteEntry(String id) {
+		// cannot be longer than 12 char
+		if (id.length() > 12) return false;
+
 		try {
 			//create and execute the statement
 			Statement statement = dbConn.createStatement();
@@ -120,6 +128,9 @@ public class DbDriver {
 	 * @see dbEntry
 	 */
 	public dbEntry searchById(String id) {
+		// cannot be longer than 12 char
+		if (id.length() > 12) return null;
+
 		try {
 			//create and execute the statement
 			Statement statement = dbConn.createStatement();
@@ -153,6 +164,9 @@ public class DbDriver {
 	 * @see dbEntry
 	 */
 	public LinkedList<dbEntry> searchBySupplier(String id) {
+		// cannot be longer than 12 char
+		if (id.length() > 12) return null;
+
 		// Create a list to add the entry objects to
 		LinkedList<dbEntry> entryList = new LinkedList<>();
 
@@ -195,6 +209,11 @@ public class DbDriver {
 	 * @return boolean whether the operation completed successfully
 	 */
 	public boolean updateEntry(String id, int quantity, double wholesalePrice, double salePrice, String supplierId) {
+		// cannot be longer than 12 char
+		if (id.length() > 12 || supplierId.length() > 12) return false;
+		// verify that the values are not negative
+		if (quantity < 0 || wholesalePrice < 0 || salePrice < 0) return false;
+
 		try {
 			//create and execute the statement
 			Statement statement = dbConn.createStatement();
