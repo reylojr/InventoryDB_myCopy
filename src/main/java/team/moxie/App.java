@@ -4,6 +4,7 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Scanner;
 import javax.swing.*;
 
 public class App {
