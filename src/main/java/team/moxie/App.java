@@ -1,11 +1,10 @@
 package team.moxie;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
-
-import javax.swing.*;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.LinkedList;
+import javax.swing.*;
 
 public class App {
 

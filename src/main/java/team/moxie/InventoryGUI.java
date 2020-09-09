@@ -1,14 +1,12 @@
 package team.moxie;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.LinkedList;
-
-
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class InventoryGUI {
 	private DbDriver driver;
@@ -113,59 +111,57 @@ public class InventoryGUI {
 
 		// exit
 		JMenuItem exitItem = new JMenuItem("Exit");
-		exitItem.addActionListener((event) -> System.exit(0));
+		exitItem.addActionListener(event -> System.exit(0));
 
 		// reload
 
 		JMenuItem refreshItem = new JMenuItem("Refresh DB");
-		refreshItem.addActionListener((event) -> {
-			NOTCONNECTEDFormattedTextField.setBackground(new Color(-65535));
-			driver = null;
-			try {
-				driver = new DbDriver("50.116.26.153", "3306", "inv", "team", "GJ&8YahAh%kS#i");
-			} catch (SQLException throwables) {
-				throwables.printStackTrace();
+		refreshItem.addActionListener(
+			event -> {
+				NOTCONNECTEDFormattedTextField.setBackground(new Color(-65535));
+				driver = null;
+				try {
+					driver = new DbDriver("50.116.26.153", "3306", "inv", "team", "GJ&8YahAh%kS#i");
+				} catch (SQLException throwables) {
+					throwables.printStackTrace();
+				}
+				NOTCONNECTEDFormattedTextField.setBackground(new Color(0x65FF5A));
 			}
-			NOTCONNECTEDFormattedTextField.setBackground(new Color(0x65FF5A));
-		});
+		);
 
 		JMenuItem loadAll = new JMenuItem("Load All");
-		loadAll.addActionListener((event) -> {
+		loadAll.addActionListener(
+			event -> {
+				JPanel getInfoPanel = new JPanel();
+				getInfoPanel.add(new JLabel("This operation may be slow."));
 
-			JPanel getInfoPanel = new JPanel();
-			getInfoPanel.add(new JLabel("This operation may be slow."));
+				int result1 = JOptionPane.showConfirmDialog(null, getInfoPanel, "WARNING", JOptionPane.OK_CANCEL_OPTION);
+				if (result1 != JOptionPane.OK_OPTION) {
+					return;
+				}
 
-			int result1 = JOptionPane.showConfirmDialog(
-					null,
-					getInfoPanel,
-					"WARNING",
-					JOptionPane.OK_CANCEL_OPTION
-			);
-			if (result1 != JOptionPane.OK_OPTION) {
-				return;
-			}
+				LinkedList<dbEntry> list = driver.returnAllEntries();
 
-			LinkedList<dbEntry> list = driver.returnAllEntries();
+				// Clear the rows
+				int rowCount = tableModel.getRowCount();
+				for (int i = rowCount - 1; i >= 0; i--) {
+					tableModel.removeRow(i);
+				}
 
-			// Clear the rows
-			int rowCount = tableModel.getRowCount();
-			for (int i = rowCount - 1; i >= 0; i--) {
-				tableModel.removeRow(i);
-			}
-
-			// Add the rows back
-			for (dbEntry entry : list) {
-				tableModel.addRow(
+				// Add the rows back
+				for (dbEntry entry : list) {
+					tableModel.addRow(
 						new Object[] {
-								entry.getId(),
-								entry.getQuantity(),
-								entry.getWholesalePrice(),
-								entry.getSalePrice(),
-								entry.getSupplierId()
-						});
+							entry.getId(),
+							entry.getQuantity(),
+							entry.getWholesalePrice(),
+							entry.getSalePrice(),
+							entry.getSupplierId()
+						}
+					);
+				}
 			}
-
-		});
+		);
 
 		fileMenu.add(loadAll);
 		fileMenu.add(refreshItem);
@@ -202,33 +198,171 @@ public class InventoryGUI {
 		}
 
 		searchButton.addActionListener(
-			new ActionListener() {
+			e -> {
+				String PID = "";
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					String[] columnNames = { "PID", "QUANTITY", "WHOLESALE", "SALE", "SUPPLIER" };
+				JTextField productIDField = new JTextField(20);
 
-					String PID = "";
+				JPanel getInfoPanel = new JPanel();
+				getInfoPanel.add(new JLabel("Product ID"));
+				getInfoPanel.add(productIDField);
 
-					JTextField productIDField = new JTextField(20);
+				int result1 = JOptionPane.showConfirmDialog(
+					null,
+					getInfoPanel,
+					"Please enter the ID of supplier:",
+					JOptionPane.OK_CANCEL_OPTION
+				);
+				if (result1 == JOptionPane.OK_OPTION) {
+					PID = productIDField.getText();
+				}
 
-					JPanel getInfoPanel = new JPanel();
-					getInfoPanel.add(new JLabel("Product ID"));
-					getInfoPanel.add(productIDField);
+				LinkedList<dbEntry> list = new LinkedList<>();
 
-					int result1 = JOptionPane.showConfirmDialog(
-						null,
-						getInfoPanel,
-						"Please enter the ID of supplier:",
-						JOptionPane.OK_CANCEL_OPTION
+				list.add(driver.searchById(PID));
+
+				// Clear the rows
+				int rowCount = tableModel.getRowCount();
+				for (int i = rowCount - 1; i >= 0; i--) {
+					tableModel.removeRow(i);
+				}
+
+				// Add the rows back
+
+				for (dbEntry entry : list) {
+					tableModel.addRow(
+						new Object[] {
+							entry.getId(),
+							entry.getQuantity(),
+							entry.getWholesalePrice(),
+							entry.getSalePrice(),
+							entry.getSupplierId()
+						}
 					);
-					if (result1 == JOptionPane.OK_OPTION) {
-						PID = productIDField.getText();
+				}
+			}
+		);
+
+		searchSuppButton.addActionListener(
+			e -> {
+				String supplierID = "";
+
+				JTextField productIDField = new JTextField(20);
+
+				JPanel getInfoPanel = new JPanel();
+				getInfoPanel.add(new JLabel("Supplier ID"));
+				getInfoPanel.add(productIDField);
+
+				int result1 = JOptionPane.showConfirmDialog(
+					null,
+					getInfoPanel,
+					"Please enter the ID of supplier:",
+					JOptionPane.OK_CANCEL_OPTION
+				);
+				if (result1 == JOptionPane.OK_OPTION) {
+					supplierID = productIDField.getText();
+				}
+
+				LinkedList<dbEntry> list = driver.searchBySupplier(supplierID);
+
+				// Clear the rows
+				int rowCount = tableModel.getRowCount();
+				for (int i = rowCount - 1; i >= 0; i--) {
+					tableModel.removeRow(i);
+				}
+
+				// Add the rows back
+
+				for (dbEntry entry : list) {
+					tableModel.addRow(
+						new Object[] {
+							entry.getId(),
+							entry.getQuantity(),
+							entry.getWholesalePrice(),
+							entry.getSalePrice(),
+							entry.getSupplierId()
+						}
+					);
+				}
+			}
+		);
+
+		updateButton.addActionListener(
+			e -> {
+				dbEntry selectedEntry;
+
+				JTextField productIDField1 = new JTextField(20);
+
+				JPanel getInfoPanel = new JPanel();
+				getInfoPanel.add(new JLabel("Product ID"));
+				getInfoPanel.add(productIDField1);
+
+				int result1 = JOptionPane.showConfirmDialog(
+					null,
+					getInfoPanel,
+					"Please enter the ID to update:",
+					JOptionPane.OK_CANCEL_OPTION
+				);
+				if (result1 == JOptionPane.OK_OPTION) {
+					selectedEntry = driver.searchById(productIDField1.getText());
+					if (selectedEntry == null) {
+						return;
 					}
+				} else {
+					return;
+				}
+
+				// Show the values that are already there
+				JTextField productIDField2 = new JTextField(selectedEntry.getId(), 20);
+				JTextField quantityField = new JTextField(Integer.toString(selectedEntry.getQuantity()), 20);
+				JTextField wholesalePriceField = new JTextField((Double.toString(selectedEntry.getWholesalePrice())), 20);
+				JTextField salePriceField = new JTextField((Double.toString(selectedEntry.getSalePrice())), 20);
+				JTextField supplierIDField = new JTextField(selectedEntry.getSupplierId(), 20);
+
+				JPanel myPanel = new JPanel();
+				myPanel.add(new JLabel("Product ID"));
+				myPanel.add(productIDField2);
+
+				myPanel.add(Box.createHorizontalStrut(5)); // a spacer
+				myPanel.add(new JLabel("Quantity"));
+				myPanel.add(quantityField);
+
+				myPanel.add(Box.createHorizontalStrut(5)); // a spacer
+				myPanel.add(new JLabel("Wholesale Price"));
+				myPanel.add(wholesalePriceField);
+
+				myPanel.add(Box.createHorizontalStrut(5)); // a spacer
+				myPanel.add(new JLabel("Sale Price"));
+				myPanel.add(salePriceField);
+
+				myPanel.add(Box.createHorizontalStrut(5)); // a spacer
+				myPanel.add(new JLabel("Supplier ID"));
+				myPanel.add(supplierIDField);
+
+				int result = JOptionPane.showConfirmDialog(
+					null,
+					myPanel,
+					"Please Enter row entry info:",
+					JOptionPane.OK_CANCEL_OPTION
+				);
+				if (result == JOptionPane.OK_OPTION) {
+					String productID = productIDField2.getText();
+
+					driver.updateEntry(
+						productID,
+						Integer.parseInt(quantityField.getText()),
+						Double.parseDouble(wholesalePriceField.getText()),
+						Double.parseDouble(salePriceField.getText()),
+						supplierIDField.getText()
+					);
+
+					JPanel confirmWindow = new JPanel();
+					confirmWindow.add(new JLabel("The entry has been updated."));
 
 					LinkedList<dbEntry> list = new LinkedList<>();
 
-					list.add(driver.searchById(PID));
+					// Display the newly updated entry
+					list.add(driver.searchById(productID));
 
 					// Clear the rows
 					int rowCount = tableModel.getRowCount();
@@ -240,44 +374,44 @@ public class InventoryGUI {
 
 					for (dbEntry entry : list) {
 						tableModel.addRow(
-							new Object[] {
-								entry.getId(),
-								entry.getQuantity(),
-								entry.getWholesalePrice(),
-								entry.getSalePrice(),
-								entry.getSupplierId()
-							}
+								new Object[] {
+										entry.getId(),
+										entry.getQuantity(),
+										entry.getWholesalePrice(),
+										entry.getSalePrice(),
+										entry.getSupplierId()
+								}
 						);
 					}
+
 				}
 			}
 		);
 
-		searchSuppButton.addActionListener(
-			new ActionListener() {
+		deleteButton.addActionListener(
+			e -> {
+				JTextField productIDField = new JTextField(5);
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					String[] columnNames = { "PID", "QUANTITY", "WHOLESALE", "SALE", "SUPPLIER" };
+				JPanel myPanel = new JPanel();
+				myPanel.add(new JLabel("Product ID"));
+				myPanel.add(productIDField);
 
-					String supplierID = "";
+				int result2 = JOptionPane.showConfirmDialog(
+					null,
+					myPanel,
+					"Please enter the ID to delete:",
+					JOptionPane.OK_CANCEL_OPTION
+				);
+				if (result2 == JOptionPane.OK_OPTION) {
+					String productID = productIDField.getText();
+					String supplierID = driver.searchById(productID).getSupplierId();
 
-					JTextField productIDField = new JTextField(5);
+					driver.deleteEntry(productID);
 
-					JPanel getInfoPanel = new JPanel();
-					getInfoPanel.add(new JLabel("Supplier ID"));
-					getInfoPanel.add(productIDField);
+					JPanel confirmWindow = new JPanel();
+					confirmWindow.add(new JLabel("The entry has been updated."));
 
-					int result1 = JOptionPane.showConfirmDialog(
-						null,
-						getInfoPanel,
-						"Please enter the ID of supplier:",
-						JOptionPane.OK_CANCEL_OPTION
-					);
-					if (result1 == JOptionPane.OK_OPTION) {
-						supplierID = productIDField.getText();
-					}
-
+					//// Now show the changes by reloading the supplier search
 					LinkedList<dbEntry> list = driver.searchBySupplier(supplierID);
 
 					// Clear the rows
@@ -303,135 +437,77 @@ public class InventoryGUI {
 			}
 		);
 
-		updateButton.addActionListener(
-			new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					dbEntry selectedEntry;
-
-					JTextField productIDField1 = new JTextField(20);
-
-					JPanel getInfoPanel = new JPanel();
-					getInfoPanel.add(new JLabel("Product ID"));
-					getInfoPanel.add(productIDField1);
-
-					int result1 = JOptionPane.showConfirmDialog(
-						null,
-						getInfoPanel,
-						"Please enter the ID to update:",
-						JOptionPane.OK_CANCEL_OPTION
-					);
-					if (result1 == JOptionPane.OK_OPTION) {
-						selectedEntry = driver.searchById("2FT57YS7CM97");
-						if (selectedEntry == null) {
-							return;
-						}
-					} else {
-						return;
-					}
-
-					// Show the values that are already there
-					JTextField productIDField2 = new JTextField(selectedEntry.getId(), 5);
-					JTextField quantityField = new JTextField(Integer.toString(selectedEntry.getQuantity()), 5);
-					JTextField wholesalePriceField = new JTextField((Double.toString(selectedEntry.getWholesalePrice())), 5);
-					JTextField salePriceField = new JTextField((Double.toString(selectedEntry.getSalePrice())), 5);
-					JTextField supplierIDField = new JTextField(selectedEntry.getSupplierId(), 5);
-
-					JPanel myPanel = new JPanel();
-					myPanel.add(new JLabel("Product ID"));
-					myPanel.add(productIDField2);
-
-					myPanel.add(Box.createHorizontalStrut(15)); // a spacer
-					myPanel.add(new JLabel("Quantity"));
-					myPanel.add(quantityField);
-
-					myPanel.add(Box.createHorizontalStrut(15)); // a spacer
-					myPanel.add(new JLabel("Wholesale Price"));
-					myPanel.add(wholesalePriceField);
-
-					myPanel.add(Box.createHorizontalStrut(15)); // a spacer
-					myPanel.add(new JLabel("Sale Price"));
-					myPanel.add(salePriceField);
-
-					myPanel.add(Box.createHorizontalStrut(15)); // a spacer
-					myPanel.add(new JLabel("Supplier ID"));
-					myPanel.add(supplierIDField);
-
-					int result = JOptionPane.showConfirmDialog(
-						null,
-						myPanel,
-						"Please Enter row entry info:",
-						JOptionPane.OK_CANCEL_OPTION
-					);
-					if (result == JOptionPane.OK_OPTION) {
-						// Do the thing!
-					}
-				}
-			}
-		);
-		deleteButton.addActionListener(
-			new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					JTextField productIDField = new JTextField(5);
-
-					JPanel myPanel = new JPanel();
-					myPanel.add(new JLabel("Product ID"));
-					myPanel.add(productIDField);
-
-					int result2 = JOptionPane.showConfirmDialog(
-						null,
-						myPanel,
-						"Please enter the ID to delete:",
-						JOptionPane.OK_CANCEL_OPTION
-					);
-					if (result2 == JOptionPane.OK_OPTION) {
-						// Do the thing!
-					}
-				}
-			}
-		);
 		createButton.addActionListener(
-			new ActionListener() {
+			e -> {
+				JTextField productIDField = new JTextField(20);
+				JTextField quantityField = new JTextField(20);
+				JTextField wholesalePriceField = new JTextField(20);
+				JTextField salePriceField = new JTextField(20);
+				JTextField supplierIDField = new JTextField(20);
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					JTextField productIDField = new JTextField(20);
-					JTextField quantityField = new JTextField(20);
-					JTextField wholesalePriceField = new JTextField(20);
-					JTextField salePriceField = new JTextField(20);
-					JTextField supplierIDField = new JTextField(20);
+				JPanel myPanel = new JPanel();
+				myPanel.add(new JLabel("Product ID"));
+				myPanel.add(productIDField);
 
-					JPanel myPanel = new JPanel();
-					myPanel.add(new JLabel("Product ID"));
-					myPanel.add(productIDField);
+				myPanel.add(Box.createHorizontalStrut(5)); // a spacer
+				myPanel.add(new JLabel("Quantity"));
+				myPanel.add(quantityField);
 
-					myPanel.add(Box.createHorizontalStrut(15)); // a spacer
-					myPanel.add(new JLabel("Quantity"));
-					myPanel.add(quantityField);
+				myPanel.add(Box.createHorizontalStrut(5)); // a spacer
+				myPanel.add(new JLabel("Wholesale Price"));
+				myPanel.add(wholesalePriceField);
 
-					myPanel.add(Box.createHorizontalStrut(15)); // a spacer
-					myPanel.add(new JLabel("Wholesale Price"));
-					myPanel.add(wholesalePriceField);
+				myPanel.add(Box.createHorizontalStrut(5)); // a spacer
+				myPanel.add(new JLabel("Sale Price"));
+				myPanel.add(salePriceField);
 
-					myPanel.add(Box.createHorizontalStrut(15)); // a spacer
-					myPanel.add(new JLabel("Sale Price"));
-					myPanel.add(salePriceField);
+				myPanel.add(Box.createHorizontalStrut(5)); // a spacer
+				myPanel.add(new JLabel("Supplier ID"));
+				myPanel.add(supplierIDField);
 
-					myPanel.add(Box.createHorizontalStrut(15)); // a spacer
-					myPanel.add(new JLabel("Supplier ID"));
-					myPanel.add(supplierIDField);
+				int result = JOptionPane.showConfirmDialog(
+					null,
+					myPanel,
+					"Please Enter row entry info:",
+					JOptionPane.OK_CANCEL_OPTION
+				);
+				if (result == JOptionPane.OK_OPTION) {
+					String productID = productIDField.getText();
 
-					int result = JOptionPane.showConfirmDialog(
-						null,
-						myPanel,
-						"Please Enter row entry info:",
-						JOptionPane.OK_CANCEL_OPTION
+					driver.createEntry(
+						productID,
+						Integer.parseInt(quantityField.getText()),
+						Double.parseDouble(wholesalePriceField.getText()),
+						Double.parseDouble(salePriceField.getText()),
+						supplierIDField.getText()
 					);
-					if (result == JOptionPane.OK_OPTION) {
-						// Do the thing!
+
+					JPanel confirmWindow = new JPanel();
+					confirmWindow.add(new JLabel("The entry has been deleted."));
+
+					LinkedList<dbEntry> list = new LinkedList<>();
+
+					// Display the newly created entry
+					list.add(driver.searchById(productID));
+
+					// Clear the rows
+					int rowCount = tableModel.getRowCount();
+					for (int i = rowCount - 1; i >= 0; i--) {
+						tableModel.removeRow(i);
+					}
+
+					// Add the rows back
+
+					for (dbEntry entry : list) {
+						tableModel.addRow(
+							new Object[] {
+								entry.getId(),
+								entry.getQuantity(),
+								entry.getWholesalePrice(),
+								entry.getSalePrice(),
+								entry.getSupplierId()
+							}
+						);
 					}
 				}
 			}
